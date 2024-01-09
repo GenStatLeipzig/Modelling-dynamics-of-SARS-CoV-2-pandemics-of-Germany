@@ -104,9 +104,9 @@ NogpaletteReihe <-  c("#CB769E", "#DE639A", "#A85C85", "#0081AF", "#4F6D7A", "#7
  
 mycolors1 = c("#CB769E",   "#3E2F5B" )
 
-p1 = ggplot(plotdat3m, aes(Altersgruppe, -(1-value), fill = variable)) + geom_col(position = "dodge") + scale_y_continuous(breaks = pretty_breaks(5), labels = label_percent(accuracy = 1), name = "Reduction Infectivity\nafter NPR adoption") + theme_hc(base_size = 16) + xlab( "") + labs(fill = "")+
+p1 = ggplot(plotdat3m, aes(Altersgruppe, -(1-value), fill = variable)) + geom_col(position = "dodge") + scale_y_continuous(breaks = pretty_breaks(5), labels = label_percent(accuracy = 1), name = "Reduction Infectivity\nafter NPI adoption") + theme_hc(base_size = 16) + xlab( "") + labs(fill = "")+
 
-  scale_fill_manual(values = mycolors1, labels=c("Effect new NPRs Nov.2021", "Effect NPRs Dec 2020")) + theme(legend.position = "top") 
+  scale_fill_manual(values = mycolors1, labels=c("Effect new NPIs Nov.2021", "Effect NPIs Dec 2020")) + theme(legend.position = "top") 
 
 
 
@@ -135,12 +135,12 @@ plottrendm[,gruppe := factor(gruppe, levels = c("New testpositives", 'Total dece
 observed_datam[,gruppe := factor(gruppe, levels = c("New testpositives", 'Total deceised', "ICU bed-occupancy"))]
 
 plottrendm2 = plottrendm#[(gruppe %in% c("New testpositives", "ICU bed-occupancy") & DateRep >as_date("2022-01-10")) ==F]
-plottrendm2[,Lockdowneffizienz2 := ifelse(Lockdowneffizienz=="keine", "Excluding NPRs Nov 2021",  
-                                          ifelse(Lockdowneffizienz =="geschätzt", "Including new NPRs Nov 2021", Lockdowneffizienz))]
+plottrendm2[,Lockdowneffizienz2 := ifelse(Lockdowneffizienz=="keine", "Excluding NPIs Nov 2021",  
+                                          ifelse(Lockdowneffizienz =="geschätzt", "Including new NPIs Nov 2021", Lockdowneffizienz))]
 
-plottrendm2[,Lockdowneffizienz2 := factor(Lockdowneffizienz2, levels = c("Including new NPRs Nov 2021", "Excluding NPRs Nov 2021", "Reported data"))]
+plottrendm2[,Lockdowneffizienz2 := factor(Lockdowneffizienz2, levels = c("Including new NPIs Nov 2021", "Excluding NPIs Nov 2021", "Reported data"))]
 observed_datam$Lockdowneffizienz2 =  "Reported data"
-plottrendm2[,Lockdowneffizienz2 := factor(Lockdowneffizienz2, levels = c("Including new NPRs Nov 2021", "Excluding NPRs Nov 2021", "Reported data"))]
+plottrendm2[,Lockdowneffizienz2 := factor(Lockdowneffizienz2, levels = c("Including new NPIs Nov 2021", "Excluding NPIs Nov 2021", "Reported data"))]
 
 
 
