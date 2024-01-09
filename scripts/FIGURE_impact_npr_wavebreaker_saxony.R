@@ -14,16 +14,16 @@ initializeSkript()
 
 ### data truth ----
 
-observed_data = fread(here(paste0("data/042_datint_ecdc_saxony_2022-06-01_v5_agestrat.txt"))) # RKI data, original data made availabe via https://github.com/robert-koch-institut/ 
+observed_data = fread(here(paste0("data/FIGURE_impact_npr_wavebreaker_saxony/042_datint_ecdc_saxony_2022-06-01_v5_agestrat.txt"))) # RKI data, original data made availabe via https://github.com/robert-koch-institut/ 
 
 observed_data[,DateRep:= as_date(DateRep)]
 
 
 ### modelled data ----
 allfolders = c(
-  "data/Eff0_6FittedParams/",
-  "data/Eff0_6NoRestrictions/",
-  "data/Eff0_6Restrictions/"
+  "data/FIGURE_impact_npr_wavebreaker_saxony/Eff0_6FittedParams/",
+  "data/FIGURE_impact_npr_wavebreaker_saxony/Eff0_6NoRestrictions/",
+  "data/FIGURE_impact_npr_wavebreaker_saxony/Eff0_6Restrictions/"
 )
 stopifnot(file.exists(here(paste0(allfolders[[1]], "BestSolution_0_14PreictionFor350Days.csv"))))
 
