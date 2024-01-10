@@ -1,2 +1,2 @@
 # Modelling-dynamics-of-SARS-CoV-2-pandemics-of-Germany
-Scripts accompanying Publication Friderich VD &amp; Pennitz P et al. "Neural Network-Assisted Humanization of COVID-19 Hamster scRNASeq data Reveals Matching Severity States in Human Disease" 
+Scripts accompanying Publication Kheifetz et al. "Modelling complete dynamics of SARS-CoV-2 pandemics of Germany and its federal states using multiple levels of data"
