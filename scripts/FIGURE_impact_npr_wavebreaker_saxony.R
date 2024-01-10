@@ -1,4 +1,7 @@
+#################################################################################.
 ## Initialise script ----
+#################################################################################.
+
 require(toolboxH) # https://github.com/holgerman/toolboxH
 require(ggplot2)
 require(ggthemes)
@@ -9,8 +12,9 @@ require(patchwork)
 
 initializeSkript()
 
-
+#################################################################################.
 ## LOAD data ----
+#################################################################################.
 
 ### data truth ----
 
@@ -62,7 +66,9 @@ extractData <- function(myfolder) {
 }
 
 
+#################################################################################.
 ## data wrangling ----
+#################################################################################.
 
 modeldat = lapply(allfolders, function(x) extractData(myfolder = x)) %>% rbindlist(use.names = T)
 
@@ -85,7 +91,10 @@ observed_data = observed_data[Altersgruppe != "unbekannt"]
 modeldatpre = modeldat[Impfeffizienz=="60%" & Altersgruppe == "all" & Lockdowneffizienz!="Dez2020" & DateRep <= as_date("2022-01-20" ) & DateRep >= as_date("2021-10-01")]
 
 
+#################################################################################.
 ## input plotting  ----
+#################################################################################.
+
 ### plot figure section A)-----
 
 plotdat1 = modeldat[is.na(phase)==F, .(DateRep,phase, Lockdowneffizienz, Impfeffizienz, vr1, vr2, Altersgruppe)]
@@ -104,7 +113,7 @@ NogpaletteReihe <-  c("#CB769E", "#DE639A", "#A85C85", "#0081AF", "#4F6D7A", "#7
  
 mycolors1 = c("#CB769E",   "#3E2F5B" )
 
-p1 = ggplot(plotdat3m, aes(Altersgruppe, -(1-value), fill = variable)) + geom_col(position = "dodge") + scale_y_continuous(breaks = pretty_breaks(5), labels = label_percent(accuracy = 1), name = "Reduction Infectivity\nafter NPI adoption") + theme_hc(base_size = 16) + xlab( "") + labs(fill = "")+
+p1 = ggplot(plotdat3m, aes(Altersgruppe, -(1-value), fill = variable)) + geom_col(position = "dodge") + scale_y_continuous(breaks = pretty_breaks(5), labels = label_percent(accuracy = 1), name = "Reduction infectivity\nafter NPI adoption") + theme_hc(base_size = 16) + xlab( "") + labs(fill = "")+
 
   scale_fill_manual(values = mycolors1, labels=c("Effect new NPIs Nov.2021", "Effect NPIs Dec 2020")) + theme(legend.position = "top") 
 
@@ -121,20 +130,20 @@ plottrendm =  melt(modeldatpre, id.vars = c("DateRep", "Lockdowneffizienz"), mea
 
 observed_datam = melt(observed_data[DateRep <= max(modeldatpre$Date)& DateRep >= as_date("2021-10-01")& Altersgruppe =="all"  ], id.vars = "DateRep", measure.vars = c('NewConfCases', 'AllDeaths', 'covid_inICU_upscaled'))
 
-observed_datam[, gruppe := ifelse(variable == "NewConfCases", "New testpositives", 
-                                  ifelse(variable== "AllDeaths", "Total deceised", 
+observed_datam[, gruppe := ifelse(variable == "NewConfCases", "testpositives", 
+                                  ifelse(variable== "AllDeaths", "total deaths", 
                                          ifelse(variable =="covid_inICU_upscaled", "ICU bed-occupancy", variable)))]
 
 
 
-plottrendm[, gruppe := ifelse(variable == "ReportedDailyPosCases", "New testpositives", 
-                              ifelse(variable== "simulatedcumuldeath", "Total deceised", 
+plottrendm[, gruppe := ifelse(variable == "ReportedDailyPosCases", "testpositives", 
+                              ifelse(variable== "simulatedcumuldeath", "total deaths", 
                                      ifelse(variable =="criticalallcomp", "ICU bed-occupancy", variable)))]
 
-plottrendm[,gruppe := factor(gruppe, levels = c("New testpositives", 'Total deceised', "ICU bed-occupancy"))]
-observed_datam[,gruppe := factor(gruppe, levels = c("New testpositives", 'Total deceised', "ICU bed-occupancy"))]
+plottrendm[,gruppe := factor(gruppe, levels = c("testpositives", 'total deaths', "ICU bed-occupancy"))]
+observed_datam[,gruppe := factor(gruppe, levels = c("testpositives", 'total deaths', "ICU bed-occupancy"))]
 
-plottrendm2 = plottrendm#[(gruppe %in% c("New testpositives", "ICU bed-occupancy") & DateRep >as_date("2022-01-10")) ==F]
+plottrendm2 = plottrendm#[(gruppe %in% c("testpositives", "ICU bed-occupancy") & DateRep >as_date("2022-01-10")) ==F]
 plottrendm2[,Lockdowneffizienz2 := ifelse(Lockdowneffizienz=="keine", "Excluding NPIs Nov 2021",  
                                           ifelse(Lockdowneffizienz =="geschätzt", "Including new NPIs Nov 2021", Lockdowneffizienz))]
 
@@ -148,7 +157,7 @@ mycolors = c("#CB769E","#368F8B")
 p2 = ggplot(plottrendm2, aes(DateRep,value  , col = Lockdowneffizienz2 )) + 
   geom_line(data = plottrendm2[Lockdowneffizienz == "keine"], alpha = 0.9, lwd = 1.5) + 
   geom_line(data = plottrendm2[Lockdowneffizienz != "keine"], alpha = 0.9, lwd = 1.5) + 
-  scale_x_date(breaks = date_breaks(width = "14 days")) + 
+  scale_x_date(breaks = date_breaks(width = "1 month"), labels =  date_format("%b-%y")) + 
   theme(axis.text.x = element_text(angle = 45 , vjust = 1, hjust =1),
         legend.position = "top")+
   facet_wrap(~gruppe, scales = "free")  +
@@ -169,6 +178,9 @@ jpeg(file = here("results/FIGURE_impact_npr_wavebreaker_saxony.jpeg"), width = 1
 finplot
 dev.off()
 
+#################################################################################.
 ## finalize script ----
+#################################################################################.
+
 finalizeSkript()
 
