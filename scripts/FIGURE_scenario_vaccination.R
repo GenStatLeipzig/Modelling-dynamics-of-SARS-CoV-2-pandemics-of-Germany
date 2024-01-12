@@ -12,7 +12,7 @@ require(here)
 require(patchwork)
 
 
-source(here("scripts/functions_model_230920.R"))
+source(here("scripts/functions_model_240112.R"))
 
 maxdate_diagrams = as_date('2022-09-30')
 
@@ -22,7 +22,7 @@ maxdate_diagrams = as_date('2022-09-30')
 
 
 ## # load epidata ####
-epidata = fread(here("data/FIGURE_scenario_vaccination/s1030_2_datint_ecdc_DE_BL_2023-03-06_v5_agestrat.txt"), dec = ",")
+epidata = fread(here("data/FIGURE_and_SUPPLEMENT_general/s1030_2_datint_ecdc_DE_BL_2023-03-26_v5_agestrat.txt"), dec = ",")
 
 epidata[ CountryExp =="Deutschland", CountryExp := "Germany"]
 

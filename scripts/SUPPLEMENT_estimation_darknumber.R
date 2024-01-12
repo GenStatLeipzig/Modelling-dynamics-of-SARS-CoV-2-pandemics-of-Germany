@@ -57,7 +57,7 @@ testzahlenAGE[, jahrwoche := paste(`Jahr KW Entnahme`, `KW Entnahme`)]
 ## # reported Testpositivees from RKI ####
 # original data now availabe via https://github.com/robert-koch-institut/ 
 
-inz = fread(here("data/SUPPLEMENT_estimation_darknumber/s1030_2_datint_ecdc_DE_BL_2023-03-26_v5_agestrat.txt"), dec = ",")[Altersgruppe =="all", .(DateRep, CountryExp, Altersgruppe, Ntotal, NewConfCases,NewConfCases7, AllConfCases)][is.na(NewConfCases)==F]
+inz = fread(here("data/FIGURE_and_SUPPLEMENT_general/s1030_2_datint_ecdc_DE_BL_2023-03-26_v5_agestrat.txt"), dec = ",")[Altersgruppe =="all", .(DateRep, CountryExp, Altersgruppe, Ntotal, NewConfCases,NewConfCases7, AllConfCases)][is.na(NewConfCases)==F]
 setorder(inz, CountryExp, Altersgruppe, DateRep)
 inz[, AllConfCasesRel := AllConfCases/Ntotal]
 inz[, isGermany :=CountryExp=="Deutschland"]
@@ -95,19 +95,19 @@ destatism3[,Anteil := N/sum(N), .(region)]
 destatism3
 
 
-namingtable = fread(here("data/federal_countries.csv"))
+namingtable = fread(here("data/FIGURE_and_SUPPLEMENT_general/federal_countries.csv"))
 #################################################################################.
 # # DATA WRANGLING ####
 #################################################################################.
 
 # english names for federal countries
-destatism[, region := namingtable[match_hk(destatism$region, namingtable$german), english]]
-destatism2[, region := namingtable[match_hk(destatism2$region, namingtable$german), english]]
-destatism3[, region := namingtable[match_hk(destatism3$region, namingtable$german), english]]
-ew[, bl := namingtable[match_hk(ew$bl, namingtable$german), english]]
-inz[, CountryExp := namingtable[match_hk(inz$CountryExp, namingtable$german), english]]
-testzahlen[, Bundesland := namingtable[match_hk(testzahlen$Bundesland, namingtable$german), english]]
-testzahlenBL[, Bundesland := namingtable[match_hk(testzahlenBL$Bundesland, namingtable$german), english]]
+destatism[, region := namingtable[match_hk(destatism$region, namingtable$german), region]]
+destatism2[, region := namingtable[match_hk(destatism2$region, namingtable$german), region]]
+destatism3[, region := namingtable[match_hk(destatism3$region, namingtable$german), region]]
+ew[, bl := namingtable[match_hk(ew$bl, namingtable$german), region]]
+inz[, CountryExp := namingtable[match_hk(inz$CountryExp, namingtable$german), region]]
+testzahlen[, Bundesland := namingtable[match_hk(testzahlen$Bundesland, namingtable$german), region]]
+testzahlenBL[, Bundesland := namingtable[match_hk(testzahlenBL$Bundesland, namingtable$german), region]]
 
 
 # more wrangling 
@@ -425,11 +425,11 @@ p1/p2/p3/p4 + plot_annotation(tag_levels = "A") + plot_layout(guides = "collect"
 jpeg2 = function(fn, myres = 600, ...) jpeg(fn, quality = 100, unit ="in", res = myres, ...)
 
 jpeg2(here("results/SUPPLEMENT_estimation_darknumber_part1.jpeg"), height = 16, width = 18)
-(p1 + guides(color = "none", alpha = "none", lwd = "none"))/p2 + plot_annotation(tag_levels  = list(c('H-I', 'H-II'))) + plot_layout(guides = "collect") & theme(legend.position = "top")
+(p1 + guides(color = "none", alpha = "none", lwd = "none"))/p2 + plot_annotation(tag_levels  = list(c('H1', 'H2'))) + plot_layout(guides = "collect") & theme(legend.position = "top")
 dev.off()
 
 jpeg2(here("results/SUPPLEMENT_estimation_darknumber_part2.jpeg"), height = 17, width = 18)
-p3/p4 + plot_annotation(tag_levels = list(c('H-III', 'H-IV'))) + plot_layout(guides = "collect") & theme(legend.position = "top")
+p3/p4 + plot_annotation(tag_levels = list(c('H3', 'H4'))) + plot_layout(guides = "collect") & theme(legend.position = "top")
 dev.off()
 
 #################################################################################.
