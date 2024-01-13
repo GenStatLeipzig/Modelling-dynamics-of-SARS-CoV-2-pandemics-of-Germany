@@ -1,19 +1,19 @@
-﻿region;german;modelname;ew2021;IDold;ID
-Germany;Deutschland;Germany;83236000;1;1
-Rhineland Palatinate;Rheinland-Pfalz;Rheinland-Pfalz;4106000;12;2
-Bavaria;Bayern;Bayern;13177000;3;3
-Baden-Württemberg;Baden-Württemberg;Baden-Wuerttemberg;11125000;2;4
-Thuringia;Thüringen;Thueringen;2109000;16;5
-Saxony-Anhalt;Sachsen-Anhalt;Sachsen-Anhalt;2169000;14;6
-Lower Saxony;Niedersachsen;Niedersachsen;8027000;10;7
-Brandenburg;Brandenburg;Brandenburg;2538000;5;8
-Saxony;Sachsen;Sachsen;4043000;9;9
-Hesse;Hessen;Hessen;6295000;17;10
-Northrhine-Westphalia;Nordrhein-Westfalen;Nordrhein-Westfalen;17925000;11;11
-Schleswig Holstein;Schleswig-Holstein;Schleswig-Holstein;2922000;15;12
-Mecklenburg Western Pomerania;Mecklenburg-Vorpommern;Mecklenburg-Vorpommern;1611000;8;13
-Saarland;Saarland;Saarland;982000;13;14
-Berlin;Berlin;Berlin;3677000;4;15
-Bremen;Bremen;Bremen;676000;6;16
-Hamburg;Hamburg;Hamburg;1854000;7;17
-unknown;unbekannt;;;;
+﻿region;german;modelname;ew2021;IDold;ID;dataname
+Germany;Deutschland;Germany;83236000;1;1;Deutschland
+Rhineland Palatinate;Rheinland-Pfalz;Rheinland-Pfalz;4106000;12;2;Rheinland-Pfalz
+Bavaria;Bayern;Bayern;13177000;3;3;Bayern
+Baden-Württemberg;Baden-Württemberg;Baden-Wuerttemberg;11125000;2;4;Baden-Wuerttemberg
+Thuringia;Thüringen;Thueringen;2109000;16;5;Thueringen
+Saxony-Anhalt;Sachsen-Anhalt;Sachsen-Anhalt;2169000;14;6;Sachsen-Anhalt
+Lower Saxony;Niedersachsen;Niedersachsen;8027000;10;7;Niedersachsen
+Brandenburg;Brandenburg;Brandenburg;2538000;5;8;Brandenburg
+Saxony;Sachsen;Sachsen;4043000;9;9;Sachsen
+Hesse;Hessen;Hessen;6295000;17;10;Hessen
+Northrhine-Westphalia;Nordrhein-Westfalen;Nordrhein-Westfalen;17925000;11;11;Nordrhein-Westfalen
+Schleswig Holstein;Schleswig-Holstein;Schleswig-Holstein;2922000;15;12;Schleswig-Holstein
+Mecklenburg Western Pomerania;Mecklenburg-Vorpommern;Mecklenburg-Vorpommern;1611000;8;13;Mecklenburg-Vorpommern
+Saarland;Saarland;Saarland;982000;13;14;Saarland
+Berlin;Berlin;Berlin;3677000;4;15;Berlin
+Bremen;Bremen;Bremen;676000;6;16;Bremen
+Hamburg;Hamburg;Hamburg;1854000;7;17;Hamburg
+unknown;unbekannt;;;;;

@@ -417,8 +417,10 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   
   if(is.null(scenarioname)==F ){
     simu_reported$scenario = scenarioname
-    variantdata = moveColFront(simu_reported, 'scenario')
-  }
+    
+  } else simu_reported$scenario = "scenario" 
+  
+  variantdata = moveColFront(simu_reported, 'scenario')
   
   ##################################################.
   # >extrct data for outputlayer-----
