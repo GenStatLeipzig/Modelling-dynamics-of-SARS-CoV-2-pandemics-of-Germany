@@ -22,7 +22,7 @@ maxdate_diagrams = as_date('2022-09-30')
 
 
 ## # load epidata ####
-epidata = fread(here("data/FIGURE_and_SUPPLEMENT_general/s1030_2_datint_ecdc_DE_BL_2023-03-26_v5_agestrat.txt"), dec = ",")
+epidata = fread(here("data/FIGURE_and_SUPPLEMENT_general/s1030_2_datint_ecdc_DE_BL_2023-03-26_v5_agestrat.txt"), dec = ",") # RKI data, original data made availabe via github.com/robert-koch-institut/
 
 epidata[ CountryExp =="Deutschland", CountryExp := "Germany"]
 
@@ -30,32 +30,19 @@ epidata[ CountryExp =="Deutschland", CountryExp := "Germany"]
 
 
 ## # load variant frequencies ####
+vocdata = fread(here("data/FIGURE_and_SUPPLEMENT_general/s245_1_simplified_coronavariants_DE_until2023-11-08.txt")) # RKI and ECDC via https://github.com/robert-koch-institut/SARS-CoV-2-Sequenzdaten_aus_Deutschland/ and https://www.ecdc.europa.eu/sites/default/files/documents/PathogenVariant_public_mappings.csv
+vocdata[,.N, .(LINEAGE_model)]
 
-outbreakinfo = fread(here("../../visualisierung/results/s03_1_omikron_VOC_VGL_data.csv"))
+vocdata2 = vocdata[LINEAGE_model %in% c("Alpha", "Delta", "BA.1", "BA.2", "BA.4+BA.5"), .(date = as_date(DateRep),
+                                                                                          proportion = proz7d,LINEAGE_model)]
+vocdata2[, variant2 := ifelse(LINEAGE_model=="Alpha", "alpha",
+                              ifelse(LINEAGE_model=="Delta", "delta",
+                                     ifelse(LINEAGE_model=="BA.1", "BA1",
+                                            ifelse(LINEAGE_model=="BA.2", "BA2",
+                                                   ifelse(LINEAGE_model=="BA.4+BA.5", "BA4+5",LINEAGE_model)))))]
+vocdata2[, variant2b:= factor(variant2, levels = c("WT","alpha", "delta", "BA1", "BA2", "BA4+5"))]
 
-
-outbreakinfo[, date :=as_date(date)]
-
-unique(outbreakinfo$location)
-
-outbreakinfo = outbreakinfo[location == "Germany"][order(date)]
-outbreakinfo[, unique(lineage )]
-outbreakinfo[, variant2 := ifelse(lineage=="Alpha", "alpha",
-                                  ifelse(lineage=="Delta", "delta",
-                                         ifelse(lineage=="Omicron_BA1", "BA1",
-                                                ifelse(lineage=="Omicron_BA2", "BA2",
-                                                       ifelse(lineage=="Omicron_BA4+BA5", "BA4+5",lineage)))))]
-setorder(outbreakinfo,date )
-
-outbreakinfo[,.N, .(lineage, variant2)]
-variants2plot = c( "alpha","delta", "BA1", "BA2", "BA4+5")
-outbreakinfo2 = outbreakinfo[variant2 %in% variants2plot]
-outbreakinfo2[,.N, .(lineage, variant2)]
-outbreakinfo2[, variant2b:= factor(variant2, levels = c("WT",variants2plot %>% as.character()))]
-
-
-# datesVariantsEmerging
-datesVariantsEmerging = outbreakinfo[proportion>0.05 & date>as_date("2020-12-01") &proportion<0.7 & lineage != variant2, .(date, proportion, variant2)][duplicated(variant2)==F][order(date)]
+datesVariantsEmerging = vocdata2[proportion>0.05 & date>as_date("2020-12-01") &proportion<0.7 , .(date, proportion, variant2)][duplicated(variant2)==F][order(date)]
 datesVariantsEmerging
 datesVariantsEmerging[variant2=="BA1", variant2 := "BA1  "]
 datesVariantsEmerging[variant2=="BA2", variant2 := "   BA2"]

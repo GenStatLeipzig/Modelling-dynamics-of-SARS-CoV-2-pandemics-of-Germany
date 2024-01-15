@@ -98,7 +98,7 @@ p_timedep = ggplot(b1_verlauf[datum<=maxdate] , aes(datum, value, col = region, 
   ) +
 
   
-  ylab("residual infectivity") +
+  ylab("dynamical infecting rate b1") +
   
   
   ggtitle("B)")+

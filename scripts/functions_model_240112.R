@@ -135,7 +135,7 @@ extract_timeinvariant_parameter <- function(parameters_together_pre, indiv_age_i
   allparam
 }
 
-extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOutputlayer=T, showplots=F) {
+extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOutputlayer=T, showplots=F, maxdate = as_date("2022-09-30")) {
   # tensor = copy(tensor_DE);scenarioname = "tensor_DE"; firstdate = as_date("2020-03-04")
   
   # tensor=tensor_DE
@@ -194,10 +194,7 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   sim_arri_e[, variant:= "uninfected"]
   sim_arri_e[, variant2:= "uninfected"]
   
-  
-  # p0=ggplot(sim_arri_e[grepl("^R", compartment)==F], aes(datum, value, col = agegroup2)) + geom_line() +facet_wrap(~compartment, scale = "free") + scale_y_continuous(labels = label_comma(accuracy = 1), breaks = pretty_breaks(10)) # R manchmal als Rest drinne
-  
-  # ### infected compartment----
+   # ### infected compartment----
   sim_arri_l_pre = tensor$sim_arri_l # 5-dimensionaler Tensor von " Infected " Kompartimenten
   dimnames(sim_arri_l_pre)[[1]] = 1:length(dimnames(sim_arri_l_pre)[[1]])
   
@@ -211,7 +208,7 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   sim_arri_l[, datum := firstdate-1 + time]
   
   stopifnot(all(paste0("age_", 1:5) %in% sim_arri_l$agegroup))
-  # stopifnot(all(c("E","IA1","IA2"  ,"IA3","IS1","IS2","IS3","StCare","C1","C2","C3","C4","D", "R1","R2","R3") %in% sim_arri_l$compartment))
+
   sim_arri_l$compartment %>% unique()
   stopifnot(all(c("E","IS1","IS2","IS3","IS4","StCare","C1","C2","C3", "D", "R1","R2","R3") %in% sim_arri_l$compartment))
   
@@ -222,10 +219,6 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
                                          ifelse(agegroup =="age_3", "A35-A59",
                                                 ifelse(agegroup =="age_4", "A60-A79",
                                                        ifelse(agegroup =="age_5", "A80+",agegroup)))))]
-  
-  
-  
-  
   
   
   sim_arri_l[, variant2:= ifelse(variant =="alpha", "WT",
@@ -242,14 +235,12 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   sim_arri_l[,compartmentGrob := str_replace_all(compartment, "[0-9]", "")]
   unique(sim_arri_l$compartmentGrob)
   # allcompartmentGrob
-  # sim_arri_l[, compartmentGrob := factor(compartmentGrob, levels = allcompartmentGrob)]
-  
+
   sim_arri_l[,compartmentGrober := ifelse(grepl("^E|^I|^C|^StCare",compartment), "Infected",
                                           ifelse(compartment %in% c("S","Vac0") , "S/Vac0",
                                                  
                                                  compartment %>% as.character()))]
-  # allcompartmentGrober
-  # sim_arri_l[, compartmentGrober := factor(compartmentGrober, levels = allcompartmentGrober)]
+
   
   unique(sim_arri_l$compartmentGrober)
   sim_arri_l[,.N,.(compartment, compartmentGrob, compartmentGrober)][order(compartmentGrober)] %>% data.frame()
@@ -280,31 +271,12 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   
   sim_arri_l[,.N, .(compartment,immunstate2, immunstate)] %>% data.frame()
   
-  
-  
-  
   venn2(names(sim_arri_e), names(sim_arri_l), plotte = showplots)
   
   sim_arri_e[, immunstate:= immutable[match_hk(sim_arri_e$immunstate2, immutable$immunstate2, makeunique = T, importcol = immutable$immunestate_yuri),immunestate_yuri]]
-  
-  # venn2(sim_arri_e$immunstate, sim_arri_l$immunstate)
-  
+ 
   sim_arri_pre = rbind(sim_arri_e, sim_arri_l)
-  
-  # sim_arri_pre[, compartment := factor(compartment, levels = allcompartment)]
-  # sim_arri_pre
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+ 
   
   # add all class
   stopifnot(all(grepl("all", sim_arri_pre$agegroup))==F)
@@ -327,14 +299,6 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   
   
   
-  
-  
-  
-  
-  
-  # sim_arri[, immunstate2 := ifelse(immunstate =="Unv", "naiv",
-  # ifelse(immunstate=="Vac", "Protection high (R1&2,Vac1&2)",
-  # ifelse(immunstate=="Wan", "Waned  (R3,Vac3)", immunstate)))]
   sim_arri[, .N, .(immunstate,immunstate2)]
   
   
@@ -353,20 +317,18 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   
   if(is.null(scenarioname)==F ){
     sim_arri$scenario = scenarioname
-    compartmentdata = moveColFront(sim_arri, 'scenario')
-  } else compartmentdata = sim_arri
+    compartmentdata = moveColFront(sim_arri, 'scenario')[datum <= maxdate]
+  } else compartmentdata = sim_arri[datum <= maxdate]
   
   
   ##################################################.
   # >extract info about inzident cases IN MODEL----
   # load reported data 
-  simu_reported_pre =  tensor$sum_increas_IS %>% as.data.table(keep.rownames = T) # sum_increas_IS ist zwei dimensionale Tensor für kumulative registrierte neue Fälle (ohne Meldenverzug, nach Zeit und Altersgruppe) # YURIFRAGE - mit symptomatic plus asymptomatic? This is not the data, that can be directly compared with reported data. this is slot TODO YURI
+  simu_reported_pre =  tensor$sum_increas_IS %>% as.data.table(keep.rownames = T) # YURI sum_increas_IS ist zwei dimensionale Tensor für kumulative registrierte neue Fälle (ohne Meldenverzug, nach Zeit und Altersgruppe) #  sum_increas_IS muss durch procent_meas (% von gemessenen) multipliziert, um den Output zu bekommen. procent_meas ist gleich 1/(1+Dunkelziffer).  sum_increas_IS ist eine Counter von neuen Fällern.
+  
   setnames(simu_reported_pre, c("num","immunstate","variant", "agegroup", "cumvalue"))
   
   simu_reported_pre[, immunstate2 := immutable[match_hk(simu_reported_pre$immunstate, immutable$immunestate_yuri, makeunique = T, importcol = immutable$immunstate2),immunstate2]]
-  
-  
-  # unique(simu_reported_pre$num)
   
   simu_reported_pre[, datum := firstdate-1 + as.numeric(num)]
   
@@ -393,7 +355,7 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   stopifnot(all(simu_reported_pre$variant2 %in% factorlevels  ))
   simu_reported_pre[, variant2:= factor(variant2, levels = factorlevels)]
   
-  simu_reported_pre[, outcome := "incidence modelintern"] # war im ersten Skripten als 'reported' bezeichnet
+  simu_reported_pre[, outcome := "incidence modelintern"] # 
   
   
   
@@ -403,13 +365,13 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
                                               agegroup = "all",
                                               agegroup2 = "all"), .(num,datum, immunstate,immunstate2, variant, variant2, outcome) ]
   
-  simu_reported = rbind(simu_reported_pre, simu_reported_toadd)
+  simu_reported = rbind(simu_reported_pre, simu_reported_toadd)[datum <= maxdate]
   setorder(simu_reported, agegroup2, immunstate, variant, variant2, datum,outcome)
   # simu_reported[immunstate ==  immunstate[1] & agegroup2 == agegroup2[3] &variant == variant[3]]
   simu_reported[, value :=  cumvalue-c(0, cumvalue[1:(.N-1)]), .(outcome, agegroup2, immunstate, variant, variant2, outcome)]
   
   
-  ggplot(simu_reported[value>=1], aes(datum, value, col = immunstate2)) + geom_line() + facet_grid(agegroup2~variant2, scales = "free") + scale_y_log10(label= label_comma(accuracy = 1), sec.axis = dup_axis()) 
+if(showplots==TRUE) print(ggplot(simu_reported[value>=1], aes(datum, value, col = immunstate2)) + geom_line() + facet_grid(agegroup2~variant2, scales = "free") + scale_y_log10(label= label_comma(accuracy = 1), sec.axis = dup_axis()) )
   
   
   plot_kumulInzByImmune = ggplot(simu_reported[value>0], aes(datum, value, col  = immunstate2))+ theme_minimal(base_size = 14) + theme(axis.text.x = element_text(angle = 90, vjust = 0.4, hjust = 0)) + geom_line(lwd = 1) + facet_grid(agegroup2 ~ variant2, scales = "free", space = "free")  + ylab(unique(simu_reported$outcome)) + ggtitle(scenarioname)
@@ -420,7 +382,7 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
     
   } else simu_reported$scenario = "scenario" 
   
-  variantdata = moveColFront(simu_reported, 'scenario')
+  variantdata = moveColFront(simu_reported, 'scenario')[datum <= maxdate]
   
   ##################################################.
   # >extrct data for outputlayer-----
@@ -522,7 +484,7 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
       outputs3[, cumul_Normal := cumsum(daily_Normal), agegroup2]
       
       
-      outputs3m = melt(outputs3, id.vars = c("datum", "agegroup2"), measure.vars = c("daily_Total","daily_Death", "daily_Critical", "daily_Normal","cumul_Total", "cumul_Death", "cumul_Critical", "cumul_Normal"))
+      outputs3m = melt(outputs3, id.vars = c("datum", "agegroup2"), measure.vars = c("daily_Total","daily_Death", "daily_Critical", "daily_Normal","cumul_Total", "cumul_Death", "cumul_Critical", "cumul_Normal"))[datum <= maxdate]
       outputs3m[, datatype := str_split(variable, "_") %>% sapply(., "[", 1)]
       outputs3m[, outcome_yuri := str_split(variable, "_") %>% sapply(., "[", 2)]
       outputs3m$outcome_yuri %>% unique()
@@ -594,7 +556,7 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   mutant_outputlayerm[, variant2 := factor(variant2, levels = c("WT", "alpha", "delta","BA1","BA2","BA4+5"))]
   
   #renaming
-  mutant_outputlayerm2 = mutant_outputlayerm[, .(datum  = dates %>% as_date(), variant2, dataVariant_anteil=value, type )]
+  mutant_outputlayerm2 = mutant_outputlayerm[, .(datum  = dates %>% as_date(), variant2, dataVariant_anteil=value, type )][datum <= maxdate]
   
   if(is.null(scenarioname)==F ){
     mutant_outputlayerm2$scenario = scenarioname
@@ -629,7 +591,7 @@ extractTensordata <- function(tensor, firstdate, scenarioname = NULL, extractOut
   infectivitydata=infectivitydata[order(time)]
   infectivitydata[, datum := firstdate-1 + time]
   
-  infectivitydatam = melt(infectivitydata, id.vars = c("rn","datum", "time"))
+  infectivitydatam = melt(infectivitydata, id.vars = c("rn","datum", "time"))[datum <= maxdate]
   
   infectivitydatam[, agegroup2:= ifelse(variable =="age_1", "A00-A14",
                                         ifelse(variable =="age_2", "A15-A34",
